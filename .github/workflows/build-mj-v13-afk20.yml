@@ -27,6 +27,9 @@ jobs:
           mkdir -p overlay
           unzip -q MJLauncher-v13-GitHub-patch.zip -d overlay
           test -f overlay/v13-patch/scripts/apply-v13-source.sh
+          # Validate overlay in the form in which its tests were authored.
+          python3 overlay/v13-patch/scripts/validate-v13-sessions.py
+          python3 overlay/v13-patch/scripts/validate-v13-afk.py
           # Keep Android package and storage aligned with the requested .modified suffix.
           python3 - <<'PY'
           from pathlib import Path
@@ -44,8 +47,6 @@ jobs:
           print(f"Updated package references in {changed} files.")
           assert changed >= 3
           PY
-          python3 overlay/v13-patch/scripts/validate-v13-sessions.py
-          python3 overlay/v13-patch/scripts/validate-v13-afk.py
 
       - name: Download official Justicia Hotfix 1 source
         shell: bash
