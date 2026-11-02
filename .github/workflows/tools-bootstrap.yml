@@ -1,0 +1,29 @@
+name: Prepare Android APK patch tools
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  tools:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Download apktool and Android build-tools
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p out
+          curl -fL --retry 3 -o out/apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v2.12.1/apktool_2.12.1.jar
+          java -jar out/apktool.jar --version
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ ! -f "$SDK/build-tools/35.0.0/lib/apksigner.jar" ]; then
+            yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$SDK" 'build-tools;35.0.0'
+          fi
+          cp "$SDK/build-tools/35.0.0/lib/apksigner.jar" out/apksigner.jar
+          cp "$SDK/build-tools/35.0.0/zipalign" out/zipalign
+          cp -r "$SDK/build-tools/35.0.0/lib64" out/lib64 || true
+      - name: Upload tools
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-patch-toolkit
+          path: out/
+          retention-days: 1
