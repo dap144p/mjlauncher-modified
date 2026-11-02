@@ -3,6 +3,8 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 /** Runs inside the game's OpenJDK, separate from Android ART. */
 public final class Bridge {
@@ -14,12 +16,35 @@ public final class Bridge {
     private static final ConcurrentHashMap<Class<?>, Method> swaps = new ConcurrentHashMap<Class<?>, Method>();
     private static final ConcurrentHashMap<Class<?>, Method> gains = new ConcurrentHashMap<Class<?>, Method>();
     private static final int AL_GAIN = 0x100A;
+    private static final AtomicInteger lastBackgroundLog = new AtomicInteger(-1);
+    private static final ConcurrentHashMap<Class<?>, Sources> sources =
+        new ConcurrentHashMap<Class<?>, Sources>();
+    private static final ConcurrentHashMap<Class<?>, Method> sourceGains =
+        new ConcurrentHashMap<Class<?>, Method>();
+    private static final ConcurrentHashMap<Class<?>, Method> sourcePlays =
+        new ConcurrentHashMap<Class<?>, Method>();
+    private static final class Sources {
+        final ConcurrentHashMap<Integer,Float> gain = new ConcurrentHashMap<Integer,Float>();
+        boolean lastMute;
+    }
+    private static Sources getSources(Class<?> api) {
+        Sources known = sources.get(api);
+        if (known != null) return known;
+        Sources created = new Sources();
+        Sources previous = sources.putIfAbsent(api, created);
+        return previous == null ? created : previous;
+    }
     private Bridge() {}
     public static void initialize(String state) {
         afkPolicy = new AfkPolicyV111(new File(state));
     }
     public static boolean background() {
-        return afkPolicy != null && afkPolicy.shouldSuppress();
+        boolean muted = afkPolicy != null && afkPolicy.shouldSuppress();
+        int value = muted ? 1 : 0;
+        int old = lastBackgroundLog.getAndSet(value);
+        if (old != value) System.err.println("[MJ AFK] presentation=" + (muted ? "suppressed" : "normal") +
+                ", background=" + muted);
+        return muted;
     }
     /** OR into the game's existing noRender check, without changing the field. */
     public static boolean suppressRender(boolean original) { return original || background(); }
@@ -39,6 +64,70 @@ public final class Bridge {
             throw new IllegalStateException(cause);
         } catch (ReflectiveOperationException failure) { throw new IllegalStateException(failure); }
     }
+    // Window probes are pass-through. They NEVER substitute fake monitors or contexts.
+    private static final java.util.concurrent.atomic.AtomicBoolean monitorReported =
+        new java.util.concurrent.atomic.AtomicBoolean(false);
+    private static final java.util.concurrent.atomic.AtomicBoolean videoReported =
+        new java.util.concurrent.atomic.AtomicBoolean(false);
+    public static void observeGlfwInit(boolean initialized) {
+        System.err.println("[MJ GLFW] glfwInit=" + initialized);
+    }
+    public static void observeMonitor(long monitor) {
+        if (monitorReported.compareAndSet(false, true))
+            System.err.println("[MJ GLFW] primaryMonitor=" + monitor);
+    }
+    public static void observeVideoMode(Object videoMode) {
+        if (videoReported.compareAndSet(false, true))
+            System.err.println("[MJ GLFW] videoMode=" + (videoMode == null ? "NULL" : "available"));
+    }
+    public static void observeWindow(long window) {
+        System.err.println("[MJ GLFW] createdWindow=" + window);
+    }
+    /** Called on the sound thread. Existing playing sources get their gain refreshed
+     * once per background transition, never by a polling Java thread with no AL context. */
+    private static void updateSourceMute(Class<?> api) {
+        Sources state = sources.get(api);
+        if (state == null) return;
+        boolean mute = background();
+        synchronized (state) {
+            if (state.lastMute == mute) return;
+            state.lastMute = mute;
+            for (Map.Entry<Integer,Float> item : state.gain.entrySet()) {
+                setSourceGain(api, item.getKey(), mute ? 0f : item.getValue());
+            }
+            System.err.println("[MJ AFK] OpenAL tracked sources=" + state.gain.size() +
+                               ", muted=" + mute);
+        }
+    }
+    private static void setSourceGain(Class<?> api, int source, float volume) {
+        try {
+            call(method(sourceGains, api, "alSourcef", int.class, int.class, float.class),
+                 source, AL_GAIN, volume);
+        } catch (RuntimeException failure) {
+            // Never prevent Minecraft from continuing when a source has been deleted.
+            System.err.println("[MJ AFK] OpenAL source gain update failed: " + failure);
+        }
+    }
+    /** Observe source volume changes without losing the volume requested by Minecraft. */
+    public static void sourceGain(int source, int parameter, float value, Class<?> api) {
+        if (parameter == AL_GAIN) {
+            Sources state = getSources(api);
+            if (state.gain.size() > 1024) state.gain.clear();
+            state.gain.put(source, value);
+        }
+        updateSourceMute(api);
+        call(method(sourceGains, api, "alSourcef", int.class, int.class, float.class),
+             source, parameter, parameter == AL_GAIN && background() ? 0f : value);
+    }
+    /** New sounds spawned in background must start silent. */
+    public static void sourcePlay(int source, Class<?> api) {
+        Sources state = getSources(api);
+        state.gain.putIfAbsent(source, 1.0f);
+        updateSourceMute(api);
+        if (background()) setSourceGain(api, source, 0f);
+        call(method(sourcePlays, api, "alSourcePlay", int.class), source);
+    }
+
     /** Keep event polling and ticks running; suppress only presentation. */
     public static void swapBuffers(long window, Class<?> api) {
         // Menus may not update the camera/listener. Minecraft also sets master
@@ -52,6 +141,8 @@ public final class Bridge {
         long now = System.nanoTime();
         Long previous = lastFrame.get();
         if (previous != null) {
+            // 20 Hz ceiling is intentional: ticking/network code can share the render thread.
+            // 0 presented frames does NOT mean that Minecraft can safely tick at 1 Hz.
             long wait = 50000000L - (now - previous.longValue());
             if (wait > 0) LockSupport.parkNanos(wait);
         }
@@ -75,6 +166,7 @@ public final class Bridge {
     }
     /** Called on the same thread/context as the game's listener update. */
     public static void audioPulse(Class<?> api) {
+        updateSourceMute(api);
         Audio a = audio.get(api);
         // Do not guess a volume before observing the game's actual gain.
         if (a == null) return;
