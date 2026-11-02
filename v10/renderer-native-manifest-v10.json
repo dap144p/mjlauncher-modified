@@ -1,0 +1,182 @@
+[
+  {
+    "origin": "mg",
+    "source_apk": "mg.apk",
+    "source_path": "lib/arm64-v8a/libmobileglues.so",
+    "output_path": "lib/arm64-v8a/libmobileglues.so",
+    "original_sha256": "3c87948b9b362ad2b6cf48e43ea181014f9999fe4607db0eff8b9db52d385fcd",
+    "output_sha256": "3c87948b9b362ad2b6cf48e43ea181014f9999fe4607db0eff8b9db52d385fcd",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "mg",
+    "source_apk": "mg.apk",
+    "source_path": "lib/armeabi-v7a/libmobileglues.so",
+    "output_path": "lib/armeabi-v7a/libmobileglues.so",
+    "original_sha256": "ea83746861b17efc8750b0975a7bc3b2282f52eaeb42181497149eec4a433838",
+    "output_sha256": "ea83746861b17efc8750b0975a7bc3b2282f52eaeb42181497149eec4a433838",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "mg",
+    "source_apk": "mg.apk",
+    "source_path": "lib/x86/libmobileglues.so",
+    "output_path": "lib/x86/libmobileglues.so",
+    "original_sha256": "a559e2ce6fdb35f1c0c310126585b0dda4ce35e00d13849007370e333ce48903",
+    "output_sha256": "a559e2ce6fdb35f1c0c310126585b0dda4ce35e00d13849007370e333ce48903",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "mg",
+    "source_apk": "mg.apk",
+    "source_path": "lib/x86_64/libmobileglues.so",
+    "output_path": "lib/x86_64/libmobileglues.so",
+    "original_sha256": "23b4d66f4a0af0051edd967370420bf21dbb044167d58e59e649b6b356e30538",
+    "output_sha256": "23b4d66f4a0af0051edd967370420bf21dbb044167d58e59e649b6b356e30538",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/arm64-v8a/libEGL_angle.so",
+    "output_path": "lib/arm64-v8a/libEGL_angle.so",
+    "original_sha256": "63eed63b06a6387daa2141831bb044d5b1f627f71f41dca0c01c49f658732067",
+    "output_sha256": "63eed63b06a6387daa2141831bb044d5b1f627f71f41dca0c01c49f658732067",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/arm64-v8a/libGLESv2_angle.so",
+    "output_path": "lib/arm64-v8a/libGLESv2_angle.so",
+    "original_sha256": "9b14635491fec01ae4e213a8e4e84da0fa3cb2b1dde6cc09ff4a21d5aa8d6499",
+    "output_sha256": "9b14635491fec01ae4e213a8e4e84da0fa3cb2b1dde6cc09ff4a21d5aa8d6499",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/armeabi-v7a/libEGL_angle.so",
+    "output_path": "lib/armeabi-v7a/libEGL_angle.so",
+    "original_sha256": "0e91deb4cdd23a8b406cd926a05bf861bfce80f1a4fb5a947dee689cd204cfaf",
+    "output_sha256": "0e91deb4cdd23a8b406cd926a05bf861bfce80f1a4fb5a947dee689cd204cfaf",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/armeabi-v7a/libGLESv2_angle.so",
+    "output_path": "lib/armeabi-v7a/libGLESv2_angle.so",
+    "original_sha256": "5cfce68a0af583177d3e48affcc8805cd6e47a500ae41b7668bc80fb720c6655",
+    "output_sha256": "5cfce68a0af583177d3e48affcc8805cd6e47a500ae41b7668bc80fb720c6655",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/x86/libEGL_angle.so",
+    "output_path": "lib/x86/libEGL_angle.so",
+    "original_sha256": "ae6e9c8dfba247b2456a27f428e57f30c17c46bd67999ade2ba1d762dd7c1b48",
+    "output_sha256": "ae6e9c8dfba247b2456a27f428e57f30c17c46bd67999ade2ba1d762dd7c1b48",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/x86/libGLESv2_angle.so",
+    "output_path": "lib/x86/libGLESv2_angle.so",
+    "original_sha256": "4c470ec83c755eef9b469d2475610039e6ba905a833a879eaa8bc53b85724609",
+    "output_sha256": "4c470ec83c755eef9b469d2475610039e6ba905a833a879eaa8bc53b85724609",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/x86_64/libEGL_angle.so",
+    "output_path": "lib/x86_64/libEGL_angle.so",
+    "original_sha256": "1bd40e6f0ee3e1f5d015d2ab2f74d0f88045b7212d5c5c4ca581ab9b4cad878c",
+    "output_sha256": "1bd40e6f0ee3e1f5d015d2ab2f74d0f88045b7212d5c5c4ca581ab9b4cad878c",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "angle",
+    "source_apk": "angle.apk",
+    "source_path": "lib/x86_64/libGLESv2_angle.so",
+    "output_path": "lib/x86_64/libGLESv2_angle.so",
+    "original_sha256": "4c57ee71ecf4c0919cb132b8344da1665bec3b6169b106be4c736ad2961a6162",
+    "output_sha256": "4c57ee71ecf4c0919cb132b8344da1665bec3b6169b106be4c736ad2961a6162",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": false
+  },
+  {
+    "origin": "zink",
+    "source_apk": "zink.apk",
+    "source_path": "lib/arm64-v8a/libEGL_legacy.so",
+    "output_path": "lib/arm64-v8a/libEGL_legacy.so",
+    "original_sha256": "9b88949fb06c19ef1bf5a3cc89f8c5a3744ff0e7c8bf4189348a4d9a8edad5ac",
+    "output_sha256": "b452bfd7ea511dc11dca5c46412d15d82d3ba0e26b098d7f9919fea4f8ac74cf",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": true
+  },
+  {
+    "origin": "zink",
+    "source_apk": "zink.apk",
+    "source_path": "lib/arm64-v8a/libdrm.so",
+    "output_path": "lib/arm64-v8a/libdrz.so",
+    "original_sha256": "f5fe501a60cbfb068ee033be2ef064360fd4b4c2d4fc0eddfd2402aec1ab0998",
+    "output_sha256": "b785e139b92864aaa8b5e52ca1595df255d71f21ba45b8f4a79ff799cc87cfe7",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": true
+  },
+  {
+    "origin": "zink",
+    "source_apk": "zink.apk",
+    "source_path": "lib/arm64-v8a/libgallium_dri.so",
+    "output_path": "lib/arm64-v8a/libgallium_old.so",
+    "original_sha256": "3c77c404b1ef7c3855841812f4a18cd5d0c031d41b66bf753ba9bb96e2118d90",
+    "output_sha256": "24bf4c27b3030dd2b340e37ff05746e983bfe82037254b4ffbebd1bea3b3af3d",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": true
+  },
+  {
+    "origin": "zink",
+    "source_apk": "zink.apk",
+    "source_path": "lib/armeabi-v7a/libEGL_legacy.so",
+    "output_path": "lib/armeabi-v7a/libEGL_legacy.so",
+    "original_sha256": "83cfe775f9538d4fdb8a686a0f26e4632091f6e361687694026d57bd2326a88e",
+    "output_sha256": "7f75593283ad1a02f98cf7ce1c5558a205a9d10f772c609d227d09e10b1b3737",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": true
+  },
+  {
+    "origin": "zink",
+    "source_apk": "zink.apk",
+    "source_path": "lib/armeabi-v7a/libdrm.so",
+    "output_path": "lib/armeabi-v7a/libdrz.so",
+    "original_sha256": "80d342b5cf7435f0973cf351857671717861537b8d806a7c67a33db397e34c13",
+    "output_sha256": "8f34a7a3258fbbdf500f4136ea43dace452a797a551791431a028b122e894ffc",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": true
+  },
+  {
+    "origin": "zink",
+    "source_apk": "zink.apk",
+    "source_path": "lib/armeabi-v7a/libgallium_dri.so",
+    "output_path": "lib/armeabi-v7a/libgallium_old.so",
+    "original_sha256": "bb4f4fc12e15d033d6d0bcd54b08eabd5b4b9045e5c3f7f8cd086e87eda5bf04",
+    "output_sha256": "e056ceb53d922871dba4f7f44ddcec47a05146d6c8647bdf63e6d35720036b9a",
+    "native_code_modified": false,
+    "dynamic_library_names_renamed": true
+  }
+]
