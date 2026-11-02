@@ -1,6 +1,9 @@
 name: Prepare Android APK patch tools
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/tools-bootstrap.yml'
 permissions:
   contents: read
 jobs:
