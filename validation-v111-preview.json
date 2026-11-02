@@ -1,0 +1,39 @@
+{
+  "name": "mj-launcher-justicia-h1-v1.11-modified-preview.apk",
+  "baseline": "v10",
+  "versionName": "justicia-h1-v1.11-modified",
+  "versionCode": 553,
+  "package": "git.artdeell.mjlaunch.modified",
+  "size_bytes": 124264640,
+  "sha256": "f42a5855ab381e23cc70cf77c1b6b4c44faf2d904f1321efb5333b72ed43dc0d",
+  "signatures": {
+    "v1": true,
+    "v2": true,
+    "same_certificate_as_v10": true,
+    "v3": false
+  },
+  "native_libs_kept": 97,
+  "checks": [
+    "JVM per-session AFK policy PASS",
+    "Engine JAR compile/relocation PASS",
+    "APK class2 smali compile PASS",
+    "APK v1+v2 signature self-verified PASS",
+    "APK manifest version code/name parsed PASS",
+    "v10 main dex, libs and non-agent assets identical PASS"
+  ],
+  "not_tested": [
+    "Android installation",
+    "Minecraft startup",
+    "multiple real online sessions",
+    "background lifecycle",
+    "RAM under load",
+    "Minecraft 1.13.x/1.14.x crash fix"
+  ],
+  "missing": [
+    "auto restart",
+    "crash sharing",
+    "manager state display",
+    "memory warning",
+    "1 FPS fallback"
+  ]
+}

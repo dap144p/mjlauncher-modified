@@ -1,0 +1,42 @@
+{
+  "artifact": "mj-launcher-justicia-h1-multisession-afk-10.modified.apk",
+  "version_code": 552,
+  "sha256": "52d7dcfb6090f2fe3cf079cbda93ba558f13c8fc78bbe21d491939a314fcd828",
+  "package": "git.artdeell.mjlaunch.modified",
+  "debuggable": false,
+  "same_signer_as_v6_v7_v8_v9": true,
+  "renderer_ids": [
+    "opengles2",
+    "opengles2_angle",
+    "opengles3_ltw",
+    "opengles3_ltw_angle",
+    "mobileglues",
+    "mobileglues_angle",
+    "vulkan_zink",
+    "vulkan_legacyzink",
+    "freedreno_kgsl",
+    "mesa_desktop",
+    "mesa_desktop_ext"
+  ],
+  "added_native_libraries": 18,
+  "auto_renderer_switch": false,
+  "fallback_on_init_failure": false,
+  "renderer_snapshot_at_play": true,
+  "tests": [
+    "45 JVM renderer catalog/pinning checks passed with -Xverify:all and Android/native substitutes",
+    "Actual APK DEX confirms no launch-time instance renderer rewrite and no GL4ES fallback",
+    "Published renderer release asset hashes and official MobileGlues certificate verified",
+    "ELF library dependencies inspected; legacy Gallium/libdrm names isolated without changing executable code",
+    "20 sessions, original app/signing identity, non-debug flag, APK signatures v1/v2/v3, ZIP alignment16KiB and complete DEX disassembly verified",
+    "All previous v9 native libraries and bundled assets, including AFK agent, are byte-for-byte preserved",
+    "v10 patch replay on actual disassembled v9 baseline passed"
+  ],
+  "device_tested": false,
+  "limits": [
+    "Catalog is all 11 backends/variants integrated in this MJ build, not every renderer project for other launchers",
+    "GPU/Android/ABI restrictions are displayed; incompatible selection stays saved and stops with error",
+    "External Mesa requires its plugin; bundled Legacy Zink is ARM only",
+    "No real device/game/native renderer smoke test; some added upstream libraries have 4KiB ELF segments and need device testing on 16KiB-page phones",
+    "VirGL is not integrated because this MJ base has no compatible server/renderer adapter"
+  ]
+}
