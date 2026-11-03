@@ -1,0 +1,32 @@
+name: Diagnose Minecraft 1.13 and 1.14 startup (no APK)
+on:
+  workflow_dispatch:
+  push:
+    branches: ['investigate/113-114-window-npe']
+    paths: ['.github/workflows/diagnose-mc-113-114.yml','tools/analyze_mc_window_bytecode.py']
+permissions:
+  contents: read
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Inspect only crash-line references of official Mojang clients
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mc-diag
+          url13='https://piston-data.mojang.com/v1/objects/c0b970952cdd279912da384cdbfc0c26e6c6090b/client.jar'
+          url14='https://piston-data.mojang.com/v1/objects/7a762a59345c13af7d87111207a93f5a8607f6c0/client.jar'
+          curl -fLsS --retry 3 "$url13" -o /tmp/mc-diag/1.13.jar
+          curl -fLsS --retry 3 "$url14" -o /tmp/mc-diag/1.14.jar
+          echo 'c0b970952cdd279912da384cdbfc0c26e6c6090b  /tmp/mc-diag/1.13.jar' | sha1sum -c
+          echo '7a762a59345c13af7d87111207a93f5a8607f6c0  /tmp/mc-diag/1.14.jar' | sha1sum -c
+          python3 tools/analyze_mc_window_bytecode.py /tmp/mc-diag/1.13.jar cfs 90
+          python3 tools/analyze_mc_window_bytecode.py /tmp/mc-diag/1.14.jar cub 78
+          rm -f /tmp/mc-diag/*.jar
