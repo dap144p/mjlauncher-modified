@@ -29,4 +29,6 @@ jobs:
           echo '7a762a59345c13af7d87111207a93f5a8607f6c0  /tmp/mc-diag/1.14.jar' | sha1sum -c
           python3 tools/analyze_mc_window_bytecode.py /tmp/mc-diag/1.13.jar cfs 90
           python3 tools/analyze_mc_window_bytecode.py /tmp/mc-diag/1.14.jar cub 78
+          python3 tools/inspect_mc_monitor_manager.py /tmp/mc-diag/1.13.jar cfr
+          python3 tools/inspect_mc_monitor_manager.py /tmp/mc-diag/1.14.jar cty
           rm -f /tmp/mc-diag/*.jar
