@@ -1,27 +1,26 @@
-# MJLauncher Modified — Justicia H1 (v10 baseline)
+# MJ Launcher Modified — Justicia Hotfix 1
 
-**Current verified baseline: v10**, versionName `justicia-h1-multisession-afk-10-modified`, versionCode `552`.
+## Current release: v1.12.0
 
-- Application ID: `git.artdeell.mjlaunch.modified`
-- Data: `Android/data/git.artdeell.mjlaunch.modified/files/`
-- 20 independent Android game sessions (A–T internally, 1–20 in UI)
-- Built-in background AFK Java agent (OpenGL presentation/audio throttling; no Fabric required)
-- 11 available renderer catalog entries, including hardware-limited entries, with **renderer choice pinned** for a running instance
-- Android 32/64 support according to bundled ABI libraries
+**Android package:** `git.artdeell.mjlaunch.modified`  
+**Data directory:** `Android/data/git.artdeell.mjlaunch.modified/files/`  
+**Version code:** `556`  
+**Version name:** `justicia-h1-v1.12.0-stable`
 
-## v10 APK identity
+The v1.12.0 build uses the exact Minecraft compatibility engine from v1.11.2, which the device owner reported successfully launched **Minecraft 1.13 and 1.14** on Android 10. The launcher keeps the 20-session controller, per-session background AFK settings, renderer lock and 11 renderer catalog choices.
 
-SHA-256: `52d7dcfb6090f2fe3cf079cbda93ba558f13c8fc78bbe21d491939a314fcd828`
+**APK SHA-256:** `376d655804db8842d6b2de3b9df17e845079aa5b430e730e3ab3d5a079240e08`
 
-The v10 APK is **124 MB**, too large for GitHub's regular 100 MB file limit. It is preserved in the user's private ChatGPT Library/project backup, not this Git tree. For a reproducible binary rebuild, use the private v10 backup containing the pinned signed v9 input, decompilation/patch scripts and renderer APK dependencies.
+See [release notes](docs/releases/v1.12.0.md) for the changelog, installation, signing and validation limitations.
 
-**Security:** Keep `signing/*.p12`, `store-password.txt`, account tokens and APK private userdata out of this repository, Actions artifacts and logs.
+### Source structure
 
-## Development
+- `v10/`: historic reproducible patch sources for the baseline.
+- `src/afk/`, `smali/`, `patches/`: v1.11–v1.12 modifications.
+- `tests/monitor-compat/`: monitor-cache recovery tests using authentic Minecraft 1.13 and 1.14 client-bytecode in an ephemeral runner.
+- `scripts/prepare-v112.py`: create an unsigned v1.12 package from a known-good v1.11.2 binary.
+- `docs/`: compatibility research and version history.
 
-- v10 is the **base**. Do not mix the previous v13 experiment into the v10 lineage.
-- v1.11 development continues in `feature/v1.11-session-afk`.
-- The 1.13–1.14 initialization crash is also reproducible on official MJ; it is not considered resolved by v10 or v1.11.
-- Android actual-device startup, networking and AFK survivability require device testing before a stable release.
+The v1.12 APK exceeds GitHub's 100 MB single-file Git upload limit. Its download is distributed separately from the source repo. No private signing keys, passwords, or Minecraft account data are in this repository.
 
-Legacy v13 experiment removed from the active repository tree; historical commits retain it.
+**Testing scope:** 1.13 and 1.14 were reported working. Other point releases and background AFK/network longevity are not yet fully verified; Android may terminate processes under memory pressure.
