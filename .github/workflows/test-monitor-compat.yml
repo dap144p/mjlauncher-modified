@@ -1,0 +1,50 @@
+name: Validate 1.13/1.14 monitor compatibility patch
+on:
+  push:
+    branches: ['investigate/113-114-window-npe']
+    paths:
+      - '.github/workflows/test-monitor-compat.yml'
+      - 'src/afk/**'
+      - 'tests/monitor-compat/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Download test-only ASM jars and original Mojang clients
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/asm-deps build/mojang
+          for name in asm asm-tree asm-commons; do
+            curl --fail --location --silent --show-error "https://repo.maven.apache.org/maven2/org/ow2/asm/${name}/9.7.1/${name}-9.7.1.jar" -o "build/asm-deps/${name}.jar"
+          done
+          curl -fLsS --retry 3 'https://piston-data.mojang.com/v1/objects/c0b970952cdd279912da384cdbfc0c26e6c6090b/client.jar' -o build/mojang/1.13.jar
+          curl -fLsS --retry 3 'https://piston-data.mojang.com/v1/objects/7a762a59345c13af7d87111207a93f5a8607f6c0/client.jar' -o build/mojang/1.14.jar
+          echo 'c0b970952cdd279912da384cdbfc0c26e6c6090b  build/mojang/1.13.jar' | sha1sum -c
+          echo '7a762a59345c13af7d87111207a93f5a8607f6c0  build/mojang/1.14.jar' | sha1sum -c
+      - name: Build Java 8-compatible relocated AFK agent
+        run: bash patches/build-engine-v111.sh build/asm-deps build/agent-v1112.jar
+      - name: Run fake monitor recovery tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/test
+          javac -source 8 -target 8 -Xlint:none -d build/test $(find tests/monitor-compat -name '*.java' ! -name 'BytecodePatchProbe.java' | sort)
+          java -javaagent:build/agent-v1112.jar=build/process-0.state -cp build/test TestMonitor
+      - name: Verify transformations against unmodified Mojang 1.13 and 1.14 classes
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build/probe
+          javac -source 8 -target 8 -Xlint:none -cp build/agent-v1112.jar -d build/probe tests/monitor-compat/BytecodePatchProbe.java
+          java -cp build/probe:build/agent-v1112.jar monitor.test.BytecodePatchProbe build/mojang/1.13.jar build/mojang/1.14.jar
+          rm -f build/mojang/1.13.jar build/mojang/1.14.jar
