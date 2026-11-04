@@ -1,0 +1,1 @@
+public final class cfj { public boolean l=true; }

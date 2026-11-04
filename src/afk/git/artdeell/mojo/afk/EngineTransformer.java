@@ -98,6 +98,35 @@ public final class EngineTransformer implements ClassFileTransformer {
                     }
                 }
             }
+            // Vanilla 1.13/1.14: monitor manager lookup uses a map populated by
+            // glfwGetMonitors(). Some Android GLFW builds report a primary monitor
+            // that is not in this cached list. Recover only if exact class shape
+            // and getter signatures match. Never change the native pointer.
+            String monitorReturn = "cfr".equals(name) ? "cfj" : "cty".equals(name) ? "ctu" : null;
+            if (monitorReturn != null && hasMonitorEnumerateAndCallback(cls)) {
+                for (MethodNode method : cls.methods) {
+                    if (!"a".equals(method.name) || !("(J)L" + monitorReturn + ";").equals(method.desc)) continue;
+                    boolean readsMap = false;
+                    for (AbstractInsnNode n : method.instructions.toArray()) {
+                        if (n instanceof MethodInsnNode &&
+                            ((MethodInsnNode)n).name.equals("get") &&
+                            ((MethodInsnNode)n).owner.equals("java/util/Map")) readsMap = true;
+                    }
+                    if (!readsMap) continue;
+                    for (AbstractInsnNode n : method.instructions.toArray()) {
+                        if (n.getOpcode() != Opcodes.ARETURN) continue;
+                        InsnList call = new InsnList();
+                        // Stack already contains the original lookup result.
+                        call.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                        call.add(new VarInsnNode(Opcodes.LLOAD, 1));
+                        call.add(new MethodInsnNode(Opcodes.INVOKESTATIC, BRIDGE, "recoverMonitor",
+                            "(Ljava/lang/Object;Ljava/lang/Object;J)Ljava/lang/Object;", false));
+                        call.add(new TypeInsnNode(Opcodes.CHECKCAST, monitorReturn));
+                        method.instructions.insertBefore(n, call);
+                        changed = true;
+                    }
+                }
+            }
             if (!changed) return null;
             cls.methods.addAll(added);
             ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -108,6 +137,17 @@ public final class EngineTransformer implements ClassFileTransformer {
             System.err.println("[MJ AFK] Unchanged class " + name + ": " + failure);
             return null;
         }
+    }
+    private static boolean hasMonitorEnumerateAndCallback(ClassNode cls) {
+        boolean enumerate = false, callback = false;
+        for (MethodNode m : cls.methods) for (AbstractInsnNode n : m.instructions.toArray()) {
+            if (!(n instanceof MethodInsnNode)) continue;
+            MethodInsnNode i = (MethodInsnNode)n;
+            if (!"org/lwjgl/glfw/GLFW".equals(i.owner)) continue;
+            if ("glfwGetMonitors".equals(i.name)) enumerate = true;
+            if ("glfwSetMonitorCallback".equals(i.name)) callback = true;
+        }
+        return enumerate && callback;
     }
     private static AbstractInsnNode previous(AbstractInsnNode node) {
         node = node.getPrevious();

@@ -83,6 +83,42 @@ public final class Bridge {
     public static void observeWindow(long window) {
         System.err.println("[MJ GLFW] createdWindow=" + window);
     }
+    /**
+     * In Minecraft 1.13/1.14, the monitor manager caches the handles from
+     * glfwGetMonitors(), but Android's virtual primary monitor can be missing
+     * from that initial list even though glfwGetPrimaryMonitor() is valid.
+     * Recover using Minecraft's own private monitor-connected callback; never
+     * synthesize a native handle or modify lwjgl/GLFW internals.
+     */
+    public static Object recoverMonitor(Object found, Object manager, long handle) {
+        if (found != null || handle == 0L || manager == null) return found;
+        final Class<?> type = manager.getClass();
+        final String name = type.getName();
+        if (!"cfr".equals(name) && !"cty".equals(name)) return found;
+        final String mapName = "cfr".equals(name) ? "b" : "a";
+        try {
+            java.lang.reflect.Field field = type.getDeclaredField(mapName);
+            field.setAccessible(true);
+            Object raw = field.get(manager);
+            if (!(raw instanceof java.util.Map)) return found;
+            @SuppressWarnings("unchecked")
+            java.util.Map<Object,Object> map = (java.util.Map<Object,Object>)raw;
+            synchronized (manager) {
+                Object entry = map.get(Long.valueOf(handle));
+                if (entry != null) return entry;
+                Method connect = type.getDeclaredMethod("a", long.class, int.class);
+                connect.setAccessible(true);
+                connect.invoke(manager, Long.valueOf(handle), Integer.valueOf(0x00040001));
+                entry = map.get(Long.valueOf(handle));
+                System.err.println("[MJ GLFW] " + name + " monitor recovery: handle=" + handle +
+                    ", cached=" + (entry != null));
+                return entry;
+            }
+        } catch (Throwable failure) {
+            System.err.println("[MJ GLFW] " + name + " monitor recovery failed: " + failure);
+            return found;
+        }
+    }
     /** Called on the sound thread. Existing playing sources get their gain refreshed
      * once per background transition, never by a polling Java thread with no AL context. */
     private static void updateSourceMute(Class<?> api) {
